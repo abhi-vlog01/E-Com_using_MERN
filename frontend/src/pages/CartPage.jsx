@@ -17,21 +17,25 @@ const CartPage = () => {
 
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  const getCartTotal = () => {
+    if (!cart?.length) return 0;
+    return cart.reduce((total, item) => total + item.price, 0);
+  };
+
+  const canCheckout =
+    auth?.token && auth?.user?.address && cart?.length > 0;
+
   //total price
 
   const totalPrice = () => {
     try {
-      let total = 0;
-
-      cart?.map((item) => {
-        total = total + item.price;
-      });
-      return total.toLocaleString("en-IN", {
+      return getCartTotal().toLocaleString("en-IN", {
         style: "currency",
         currency: "INR",
       });
@@ -71,6 +75,18 @@ const CartPage = () => {
   useEffect(() => {
     getToken();
   }, [auth?.token]);
+
+  useEffect(() => {
+    if (!canCheckout) {
+      setShowPaymentForm(false);
+      setInstance("");
+    }
+  }, [canCheckout]);
+
+  const openPaymentForm = () => {
+    setShowPaymentForm(true);
+    setInstance("");
+  };
 
   //handle payments
 
@@ -188,28 +204,36 @@ const CartPage = () => {
             )}
 
             <div className="mt-2">
-              {!clientToken || !cart.length ? (
-                ""
-              ) : (
+              {canCheckout && clientToken ? (
                 <>
-                  <DropIn
-                    options={{
-                      authorization: clientToken,
-                      paypal: {
-                        flow: "vault",
-                      },
-                    }}
-                    onInstance={(instance) => setInstance(instance)}
-                  />
-                  <button
-                    className="btn btn-primary mb-2"
-                    onClick={handlePayment}
-                    disabled={loading || !instance || !auth?.user?.address}
-                  >
-                    {loading ? "Processing..." : "Make Payment"}
-                  </button>
+                  {!showPaymentForm ? (
+                    <button
+                      className="btn btn-primary mb-2"
+                      onClick={openPaymentForm}
+                    >
+                      Make Payment
+                    </button>
+                  ) : (
+                    <>
+                      <DropIn
+                        key={`${getCartTotal()}-${clientToken}`}
+                        options={{
+                          authorization: clientToken,
+                          paymentOptionPriority: ["card"],
+                        }}
+                        onInstance={(instance) => setInstance(instance)}
+                      />
+                      <button
+                        className="btn btn-primary mb-2"
+                        onClick={handlePayment}
+                        disabled={loading || !instance}
+                      >
+                        {loading ? "Processing..." : "Make Payment"}
+                      </button>
+                    </>
+                  )}
                 </>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

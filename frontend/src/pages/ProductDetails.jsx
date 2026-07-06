@@ -3,12 +3,21 @@ import Layout from "../components/Layout/Layout";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/Cart";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const [cart, setCart] = useCart();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
+
+  const addToCart = (item) => {
+    setCart([...cart, item]);
+    localStorage.setItem("cart", JSON.stringify([...cart, item]));
+    toast.success("Item Added to cart");
+  };
 
   //get single product
   const productDetails = async () => {
@@ -63,7 +72,12 @@ const ProductDetails = () => {
             <h6>Description : {product.description}</h6>
             <h6>Price : ₹ {product.price}</h6>
             <h6>Category : {product.category?.name}</h6>
-            <button className="btn btn-secondary ms-1">ADD TO CART</button>
+            <button
+              className="btn btn-secondary ms-1"
+              onClick={() => addToCart(product)}
+            >
+              ADD TO CART
+            </button>
           </div>
         </div>
         <hr />
@@ -94,7 +108,10 @@ const ProductDetails = () => {
                   >
                     More Details
                   </button>
-                  <button className="btn btn-secondary ms-1">
+                  <button
+                    className="btn btn-secondary ms-1"
+                    onClick={() => addToCart(p)}
+                  >
                     ADD TO CART
                   </button>
                 </div>
