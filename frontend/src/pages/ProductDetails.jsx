@@ -55,18 +55,19 @@ const ProductDetails = () => {
 
   return (
     <Layout>
-      <div className="container-fluid p-3">
+      <div className="container-fluid p-3 product-details-page">
         <div className="row">
           <div className="col-md-6">
             <img
               src={`${
                 import.meta.env.VITE_API_URL
               }/api/v1/product/product-photo/${product._id}`}
-              className="card-img-top"
+              className="card-img-top product-hero-img"
               alt={product.name}
             />
           </div>
           <div className="col-md-6">
+            <div className="product-info">
             <h1 className="text-center">Product Details</h1>
             <h6>Name : {product.name}</h6>
             <h6>Description : {product.description}</h6>
@@ -78,6 +79,7 @@ const ProductDetails = () => {
             >
               ADD TO CART
             </button>
+            </div>
           </div>
         </div>
         <hr />
@@ -86,7 +88,7 @@ const ProductDetails = () => {
           {relatedProducts.length < 1 && (
             <p className="text-center">No Similar Products Found</p>
           )}
-          <div className="d-flex flex-wrap">
+          <div className="product-grid">
             {relatedProducts?.map((p) => (
               <div className="card m-2" style={{ width: "18rem" }}>
                 <img
@@ -101,7 +103,7 @@ const ProductDetails = () => {
                   <p className="card-text">
                     {p.description.substring(0, 30)}...
                   </p>
-                  <p className="card-text"> ₹ {p.price}</p>
+                  <p className="card-text product-price"> ₹ {p.price}</p>
                   <button
                     className="btn btn-primary me-1"
                     onClick={() => navigate(`/product/${p.slug}`)}

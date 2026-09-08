@@ -120,10 +120,10 @@ const CartPage = () => {
 
   return (
     <Layout>
-      <div className="container">
+      <div className="container cart-page">
         <div className="row">
           <div className="col-md-12">
-            <h1 className="text-center bg-light p-2 mb-1">
+            <h1 className="text-center bg-light p-2 mb-1 cart-hero">
               {`Hello ${auth?.token && auth?.user?.name}`}
             </h1>
 
@@ -139,7 +139,7 @@ const CartPage = () => {
         <div className="row">
           <div className="col-md-8">
             {cart?.map((p) => (
-              <div className="row mb-2 p-3 card flex-row">
+              <div className="row mb-2 p-3 card flex-row cart-item">
                 <div className="col-md-4">
                   <img
                     src={`${
@@ -165,6 +165,7 @@ const CartPage = () => {
             ))}
           </div>
           <div className="col-md-4 text-center">
+            <div className="cart-summary">
             <h2>Cart Summary</h2>
             <p>Total | Checkout | Payment</p>
             <hr />
@@ -234,6 +235,7 @@ const CartPage = () => {
                   )}
                 </>
               ) : null}
+            </div>
             </div>
           </div>
         </div>

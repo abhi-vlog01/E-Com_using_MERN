@@ -26,7 +26,7 @@ function Header() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary sticky-top">
+      <nav className="navbar navbar-expand-lg navbar-dark sticky-top app-navbar">
         <div className="container-fluid">
           <button
             className="navbar-toggler"
@@ -49,7 +49,7 @@ function Header() {
               <SearchInput />
 
               <li className="nav-item">
-                <NavLink to="/" className="nav-link">
+                <NavLink to="/" end className="nav-link">
                   Home
                 </NavLink>
               </li>
@@ -98,15 +98,16 @@ function Header() {
               ) : (
                 <>
                   <li className="nav-item dropdown">
-                    <NavLink
+                    <Link
                       className="nav-link dropdown-toggle"
-                      href="#"
+                      to="#"
                       role="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
+                      onClick={(e) => e.preventDefault()}
                     >
                       {auth?.user?.name}
-                    </NavLink>
+                    </Link>
                     <ul className="dropdown-menu">
                       <li>
                         <NavLink
@@ -133,8 +134,8 @@ function Header() {
               )}
 
               <li className="nav-item">
-                <NavLink to="/cart" className="nav-link">
-                  Cart ({cart?.length})
+                <NavLink to="/cart" className="nav-link cart-link">
+                  Cart <span className="cart-badge">{cart?.length}</span>
                 </NavLink>
               </li>
             </ul>

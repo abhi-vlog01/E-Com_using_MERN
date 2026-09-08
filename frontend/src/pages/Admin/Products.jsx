@@ -28,7 +28,7 @@ const Products = () => {
 
   return (
     <Layout>
-      <div className="container-fluid p-3">
+      <div className="container-fluid p-3 dashboard-page">
         <div className="row">
           <div className="col-md-3">
             <AdminMenu />
@@ -36,7 +36,7 @@ const Products = () => {
           <div className="col-md-9">
             <h1 className="text-center">All Products List</h1>
 
-            <div className="d-flex flex-wrap">
+            <div className="product-grid">
               {products?.map((p) => (
                 <Link
                   to={`/dashboard/admin/product/${p.slug}`}
