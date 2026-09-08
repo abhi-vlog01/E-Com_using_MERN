@@ -44,7 +44,8 @@ const Login = () => {
     <Layout title="Login - Ecommerce App">
       <div className="form-container">
         <form onSubmit={handleSubmit}>
-          <h4 className="title">LOGIN FORM</h4>
+          <h4 className="title">Welcome back</h4>
+          <p className="auth-subtitle">Login to continue shopping</p>
 
           <div className="mb-3">
             <input
@@ -70,19 +71,19 @@ const Login = () => {
             />
           </div>
 
-          <div className="mb-3">
+          <div className="auth-forgot-wrap">
             <button
               type="button"
-              className="btn btn-primary"
+              className="auth-forgot-btn"
               onClick={() => {
                 navigate("/forgot-password");
               }}
             >
-              Forgot Password
+              Forgot Password?
             </button>
           </div>
 
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn auth-submit-btn">
             LOGIN
           </button>
         </form>

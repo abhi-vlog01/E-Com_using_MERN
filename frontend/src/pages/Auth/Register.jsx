@@ -39,7 +39,8 @@ const Register = () => {
     <Layout title="Register - Ecommerce App">
       <div className="form-container">
         <form onSubmit={handleSubmit}>
-          <h4 className="title">REGISTER FORM</h4>
+          <h4 className="title">Create account</h4>
+          <p className="auth-subtitle">Register to start shopping</p>
           <div className="mb-3">
             {/* <label htmlFor="exampleInputName" className="form-label">
               Name
@@ -115,7 +116,19 @@ const Register = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary">
+          <div className="auth-forgot-wrap">
+            <button
+              type="button"
+              className="auth-forgot-btn"
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              Already have an account? Login
+            </button>
+          </div>
+
+          <button type="submit" className="btn auth-submit-btn">
             REGISTER
           </button>
         </form>

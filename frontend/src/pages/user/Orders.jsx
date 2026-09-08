@@ -34,7 +34,7 @@ const Orders = () => {
 
   return (
     <Layout title={"Your Orders"}>
-      <div className="container-fluid p-3">
+      <div className="container-fluid p-3 dashboard-page">
         <div className="row">
           <div className="col-md-3">
             <UserMenu />

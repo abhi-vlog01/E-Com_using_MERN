@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Layout from "../components/Layout/Layout";
 import axios from "axios";
 import { Button, Checkbox, Radio } from "antd";
@@ -6,6 +6,7 @@ import { Prices } from "../components/Prices";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/Cart";
 import toast from "react-hot-toast";
+import Loader from "../components/common/Loader";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -18,8 +19,10 @@ function HomePage() {
   const [radio, setRadio] = useState([]);
 
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const nextPageRef = useRef(2);
+  const leftoverRef = useRef([]);
+  const HOME_PAGE_SIZE = 8;
 
   //get all category
 
@@ -48,10 +51,23 @@ function HomePage() {
     try {
       setLoading(true);
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/product/product-list/${page}`
+        `${import.meta.env.VITE_API_URL}/api/v1/product/product-list/1`
       );
+      let items = res.data?.products || [];
+      let fetchedPage = 1;
+
+      if (items.length && items.length < HOME_PAGE_SIZE) {
+        const res2 = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/v1/product/product-list/2`
+        );
+        items = [...items, ...(res2.data?.products || [])];
+        fetchedPage = 2;
+      }
+
+      leftoverRef.current = items.slice(HOME_PAGE_SIZE);
+      nextPageRef.current = fetchedPage + 1;
       setLoading(false);
-      setProducts(res.data.products);
+      setProducts(items.slice(0, HOME_PAGE_SIZE));
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -71,21 +87,27 @@ function HomePage() {
     }
   };
 
-  useEffect(() => {
-    if (page === 1) return;
-    loadMore();
-  }, [page]);
-
-  //load more
-
   const loadMore = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/product/product-list/${page}`
-      );
+      let batch = leftoverRef.current;
+      leftoverRef.current = [];
+
+      while (batch.length < HOME_PAGE_SIZE) {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/v1/product/product-list/${
+            nextPageRef.current
+          }`
+        );
+        const more = res.data?.products || [];
+        nextPageRef.current += 1;
+        if (!more.length) break;
+        batch = [...batch, ...more];
+      }
+
+      leftoverRef.current = batch.slice(HOME_PAGE_SIZE);
+      setProducts((prev) => [...prev, ...batch.slice(0, HOME_PAGE_SIZE)]);
       setLoading(false);
-      setProducts([...products, ...res.data?.products]);
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -128,9 +150,10 @@ function HomePage() {
 
   return (
     <Layout title={"All Products - Best offers"}>
-      <div className="container-fluid p-3">
+      <div className="container-fluid p-3 home-page">
         <div className="row">
-          <div className="col-md-2">
+          <div className="col-md-3">
+            <div className="filter-panel">
             <h5 className="text-center">Filter By Category</h5>
             <div className="d-flex flex-column">
               {categories?.map((c) => (
@@ -164,11 +187,16 @@ function HomePage() {
                 RESET FILTERS
               </button>
             </div>
+            </div>
           </div>
 
-          <div className="col-md-10">
+          <div className="col-md-9 products-panel">
             <h1 className="text-center">All Products</h1>
-            <div className="d-flex flex-wrap">
+            {loading && products.length === 0 ? (
+              <Loader />
+            ) : (
+              <>
+            <div className="product-grid">
               {products?.map((p) => (
                 <div className="card m-2" style={{ width: "18rem" }}>
                   <img
@@ -183,7 +211,7 @@ function HomePage() {
                     <p className="card-text">
                       {p.description.substring(0, 30)}...
                     </p>
-                    <p className="card-text"> ₹ {p.price}</p>
+                    <p className="card-text product-price"> ₹ {p.price}</p>
                     <button
                       className="btn btn-primary me-1"
                       onClick={() => navigate(`/product/${p.slug}`)}
@@ -207,19 +235,21 @@ function HomePage() {
                 </div>
               ))}
             </div>
-            <div className="m-2 p-3">
-              {products && products.length < total && (
+            <div className="m-2 p-3 text-center">
+              {products && products.length > 0 && products.length < total && (
                 <Button
                   className="btn btn-warning"
                   onClick={(e) => {
                     e.preventDefault();
-                    setPage(page + 1);
+                    loadMore();
                   }}
                 >
                   {loading ? "Loading..." : "Load More"}
                 </Button>
               )}
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -31,11 +31,11 @@ const CategoryProduct = () => {
 
   return (
     <Layout>
-      <div className="container mt-3">
+      <div className="container mt-3 category-page">
         <h4 className="text-center">Category - {category?.name}</h4>
         <h6 className="text-center">{products?.length} result found</h6>
         <div className="row offset-1">
-          <div className="d-flex flex-wrap">
+          <div className="product-grid">
             {products?.map((p) => (
               <div className="card m-2" style={{ width: "18rem" }}>
                 <img
@@ -50,7 +50,7 @@ const CategoryProduct = () => {
                   <p className="card-text">
                     {p.description.substring(0, 30)}...
                   </p>
-                  <p className="card-text"> ₹ {p.price}</p>
+                  <p className="card-text product-price"> ₹ {p.price}</p>
                   <button
                     className="btn btn-primary me-1"
                     onClick={() => navigate(`/product/${p.slug}`)}
